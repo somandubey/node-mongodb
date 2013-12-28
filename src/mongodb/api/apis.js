@@ -16,7 +16,7 @@ var apis = (function () {
         'regular_expression': 11,
         'javascript': 13,
         'symbol': 14,
-        'javascript_with_scope)': 15,
+        'javascript_with_scope': 15,
         '32_bit_integer': 16,
         'timestamp': 17,
         '64_bit_integer': 18,
@@ -71,10 +71,15 @@ var apis = (function () {
         // return res.send(responseObj['statusCode'], responseObj);
     }
 
-// filters
-//    operators
-//    offset, limit
-//    multi update true ?
+    /**
+     * filters
+     * operators
+     * offset, limit
+     * multi update true ?
+     *
+     * @param queries
+     * @returns {{filters: {}, offset: number, limit: number, multi: boolean, select: *, sort: *}}
+     */
     var resolveQueries = function(queries){
         // var queries = req.query;
         var filters = {};
@@ -123,7 +128,7 @@ var apis = (function () {
                             if(selectArr.length) {
                                 select = {};
                                 Object.keys(selectArr).forEach(function (s) {
-//                                select.push(selectArr[s]);
+    //                                select.push(selectArr[s]);
                                     select[selectArr[s]] = 1;
                                 });
                                 select =  select;
@@ -268,6 +273,16 @@ var apis = (function () {
         });
 
         return valueList;
+    };
+
+    var meta = function (select, filters, options, update, multi) {
+        return {
+            select : select,
+            filters : filters,
+            options : options,
+            update : update,
+            multi : multi
+        };
     }
 
     return {
@@ -298,24 +313,19 @@ var apis = (function () {
         obj_create: function (ModelRef, objToCreate, callback) {
             ModelRef.create(objToCreate, function (error, results) {
                 if (error) {
-                    handleError(callback, error, null, "not created.");
+                    handleError(callback, error, null, "not created.", meta());
                 } else {
-                    handleSuccess (callback, 201, results);
+                    handleSuccess (callback, 201, results, meta());
                 }
             });
         },
 
         obj_get: function (ModelRef, filters, select, options, callback) {
             ModelRef.find(filters, select, options, function (error, results) {
-                var meta = {
-                    select : select,
-                    filters : filters,
-                    options : options
-                }
                 if (error) {
-                    handleError(callback, error, null, "not found.", meta);
+                    handleError(callback, error, null, "not found.", meta(select, filters, options));
                 } else {
-                    handleSuccess (callback, 200, results, meta);
+                    handleSuccess (callback, 200, results, meta(select, filters, options));
                 }
             });
         },
@@ -323,9 +333,9 @@ var apis = (function () {
         obj_update:  function (ModelRef, filters, update, multi, callback) {
             ModelRef.update(filters, { $set: update}, {multi : multi}, function (error, results) {
                 if (error) {
-                    handleError(callback, error, null, "not found.");
+                    handleError(callback, error, null, "not found.", meta(null, filters, options, update, multi));
                 } else {
-                    handleSuccess (callback, 204, results);
+                    handleSuccess (callback, 204, results, meta(null, filters, options, update, multi));
                 }
             });
         },
@@ -333,9 +343,9 @@ var apis = (function () {
         obj_remove: function (ModelRef, filters, callback) {
             ModelRef.remove(filters, function (error, results) {
                 if (error) {
-                    handleError(callback, error, null, "not found.");
+                    handleError(callback, error, null, "not found.", meta(null, filters));
                 } else {
-                    handleSuccess (callback, 200, results);
+                    handleSuccess (callback, 200, results, meta(null, filters));
                 }
             });
         }

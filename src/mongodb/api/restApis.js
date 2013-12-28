@@ -25,7 +25,7 @@ var restApis = (function() {
     };
 
     return {
-        create: function(req, res, next, ModelRef) {
+        create: function(req, res, next) {
             var start = new Date().getTime();
             var collection = req.params.collection;
             var ModelRef = models.getModel(collection);
@@ -99,7 +99,7 @@ var restApis = (function() {
                 if (id) {
                     req.query['_id__e'] = id;
                 } else {
-                    req.query['multi'] = true;
+                    req.query['multi'] = "true";
                 }
                 try {
                     apis.obj_queries_update(ModelRef, req.query, req.body, {
@@ -118,7 +118,7 @@ var restApis = (function() {
             }
         },
 
-        delete: function(req, res, next, ModelRef) {
+        delete: function(req, res, next) {
             var start = new Date().getTime();
             var collection = req.params.collection;
             var ModelRef = models.getModel(collection);

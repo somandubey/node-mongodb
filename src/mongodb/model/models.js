@@ -2,16 +2,18 @@
  * Created by Soman Dubey on 12/27/13.
  */
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var Schema = mongoose.Schema
+var ObjectId = Schema.ObjectId;
 
 var models = (function () {
     var defaultSchema = new Schema({
-        _id: Object
+        //_id: ObjectId,
+        "name": String
     });
-    var defaultModel = mongoose.model('default', defaultSchema);
+    var defaultsModel = mongoose.model('defaults', defaultSchema);
 
     var models = {
-        default: defaultModel
+        defaults: defaultsModel
     };
 
     return {
@@ -21,6 +23,9 @@ var models = (function () {
 
         setModel: function (collectionName, schema) {
             models[collectionName] = mongoose.model(collectionName.toString(), schema);
+            if ( !collectionName.endsWith("s") ) {
+                console.log('model created but its a good practise to pluralize your model name as mongodb collection name will always be plural.');
+            }
             return true;
         }
     };
