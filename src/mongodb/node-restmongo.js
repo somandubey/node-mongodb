@@ -24,9 +24,8 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 }
 
-var mongooseUtil = require('./util/mongooseUtil');
 var routes = require('./route/routes');
-routes.init(app);
+routes.init(app).connect("localhost", "test").initRoutes();
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log('server listening on port ' + app.get('port'));

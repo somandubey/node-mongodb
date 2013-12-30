@@ -1,6 +1,6 @@
 {
   "name": "node-mongodb",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "This repoistory builds rest framework around mongodb which is as easy as tastypie. It also builds node.js library for calling mongodb API methods directly.",
   "keywords": ["node.js", "mongodb", "rest", "tastypie", "mongodb rest filters", "mongodb rest orderby", "mongodb rest groupby"],
   "homepage": "https://github.com/somandubey/node-mongodb",
@@ -25,7 +25,7 @@
       }
   },
   "files": [
-    "./src",
+    "./lib",
     "./Gruntfile.js",
     "./LICENSE",
     "./npm-debug",
@@ -35,6 +35,10 @@
   "repository": {
     "type" : "git",
     "url" : "https://github.com/somandubey/node-mongodb.git"
+  },
+  "main": "./src/mongodb/route/routes",
+  "directories": {
+    "lib": "./src"
   },
   "dependencies": {
     "grunt": "~0.4.1",

@@ -1,6 +1,7 @@
 /**
  * Created by Soman Dubey on 12/21/13.
  */
+var constants = require('../util/constants');
 
 var apis = (function () {
     var BsonTypes = {
@@ -24,7 +25,7 @@ var apis = (function () {
         'max_key': 127
     }
 
-    var responseObj = {
+    var _responseObj = {
         "statusCode": 404,
         "headers": {},
         "content": null,
@@ -41,6 +42,7 @@ var apis = (function () {
     };
 
     var handleError = function (callback, error, statusCode, content, meta) {
+        var responseObj = _responseObj;
         responseObj['statusCode'] = statusCode || 500;
         responseObj['content'] = content || "not done.";
         responseObj['err'] = error;
@@ -59,6 +61,7 @@ var apis = (function () {
     };
 
     var handleSuccess = function (callback, statusCode, content, meta) {
+        var responseObj = _responseObj;
         responseObj['statusCode'] = statusCode || 200;
         responseObj['content'] = { 'data' : content};
         responseObj['content']['meta'] = meta;
@@ -85,7 +88,8 @@ var apis = (function () {
         var filters = {};
         var offset = 0;
         var limit = 20;
-        var select = null;
+        var select = {};
+        var populate = null;
         var sort = null;
         var multi = false;
         var failed = false;
@@ -123,12 +127,19 @@ var apis = (function () {
                         case 'multi':
                             multi =  queries[query].toLowerCase() == "true";
                             break;
+                        case '_id':
+                            filters['_id'] = new constants.types.ObjectId(queries[query]);
+//                            filters['_id'] = { "$oid": queries[query] };
+                            break;
+                        case 'populate':
+                            populate = queries[query];
+                            break;
                         case 'select':
                             var selectArr = queries[query].split(',');
                             if(selectArr.length) {
                                 select = {};
                                 Object.keys(selectArr).forEach(function (s) {
-    //                                select.push(selectArr[s]);
+                                    //                                select.push(selectArr[s]);
                                     select[selectArr[s]] = 1;
                                 });
                                 select =  select;
@@ -167,6 +178,7 @@ var apis = (function () {
                 queryParams['select'] = select;
                 queryParams['multi'] = multi;
                 queryParams['sort'] = sort;
+                queryParams['populate'] = populate;
             });
         }
         console.log(JSON.stringify(queryParams));
@@ -287,17 +299,21 @@ var apis = (function () {
 
     return {
 
-        responseObj: responseObj,
+        responseObj: function () {
+            var responseObj = _responseObj
+            return responseObj;
+        },
 
-        obj_queries_get: function (ModelRef, queries, callback) {
+        obj_queries_get: function (ModelRef, queries, populate, callback) {
             var queryParams = resolveQueries(queries);
             var options = {
-                offset: queryParams.offset,
+                skip: queryParams.offset,
                 limit: queryParams.limit,
                 sort: queryParams.sort
             };
+            var populate = queryParams.populate;
 
-            this.obj_get(ModelRef, queryParams.filters, queryParams.select, options, callback)
+            this.obj_get(ModelRef, queryParams.filters, queryParams.select, options, populate, callback)
         },
 
         obj_queries_update: function (ModelRef, queries, update, callback) {
@@ -311,23 +327,34 @@ var apis = (function () {
         },
 
         obj_create: function (ModelRef, objToCreate, callback) {
-            ModelRef.create(objToCreate, function (error, results) {
+            var modelRef = new ModelRef(objToCreate)
+            // ModelRef.create(objToCreate, function (error, results, num) {
+            modelRef.save(function (error, results, num) {
                 if (error) {
                     handleError(callback, error, null, "not created.", meta());
                 } else {
-                    handleSuccess (callback, 201, results, meta());
+                    handleSuccess (callback, 201, {"_id": modelRef._id}, meta());
                 }
             });
         },
 
-        obj_get: function (ModelRef, filters, select, options, callback) {
-            ModelRef.find(filters, select, options, function (error, results) {
-                if (error) {
-                    handleError(callback, error, null, "not found.", meta(select, filters, options));
-                } else {
-                    handleSuccess (callback, 200, results, meta(select, filters, options));
-                }
-            });
+        obj_get: function (ModelRef, filters, select, options, populate, callback) {
+//            ModelRef.find(filters, select, options, function (error, results) {
+//                if (error) {
+//                    handleError(callback, error, null, "not found.", meta(select, filters, options));
+//                } else {
+//                    handleSuccess (callback, 200, results, meta(select, filters, options));
+//                }
+//            });
+            ModelRef.find(filters, select, options)
+                .populate(populate)
+                .exec(function (error, results) {
+                    if (error) {
+                        handleError(callback, error, null, "not found.", meta(select, filters, options));
+                    } else {
+                        handleSuccess (callback, 200, results, meta(select, filters, options));
+                    }
+                });
         },
 
         obj_update:  function (ModelRef, filters, update, multi, callback) {

@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var apis = require('./apis');
 var models = require('../model/models');
+var constants = require('../util/constants');
 
 var restApis = (function() {
     var setHeader = function (res, start) {
@@ -16,7 +17,7 @@ var restApis = (function() {
     };
 
     var handleError = function (res, error) {
-        var responseObj = apis.responseObj;
+        var responseObj = apis.responseObj();
         responseObj['statusCode'] = 500;
         responseObj['content'] = 'Error: ' + (error.message || 'Server Error');
         responseObj['response_error'] = error;
@@ -41,7 +42,7 @@ var restApis = (function() {
                             },
                             error: function (response) {
                                 setHeader(res, start);
-                                res.send(response['statusCode'], response['content']);
+                                res.send(response['data']['statusCode'], response);
                             }
                         });
                     } else {
@@ -61,27 +62,44 @@ var restApis = (function() {
             var collection = req.params.collection;
             var ModelRef = models.getModel(collection);
             if (ModelRef == null) {
-                handleError(res, {message: 'node-restmongo error: Model structure needs to be defined. Refer documentation at https://github.com/somandubey/node-restmongo'});
+                handleError(res, {message: 'node-mongodb error: Model structure needs to be defined. Refer documentation at https://github.com/somandubey/node-mongodb'});
             } else {
                 var id = req.params.id;
-                if (id) {
-                    req.query['_id__e'] = id;
-                }
+//                if (id) {
+//                    req.query['_id__e'] = constants.schemaType.ObjectId(id);
+//                }
                 try {
-                    apis.obj_queries_get(ModelRef, req.query, {
-                        success: function (response) {
-                            setHeader(res, start);
-                            if (id) {
-                                res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
-                            } else {
-                                res.send(response['statusCode'], response['content']);
+                    if (id) {
+                        apis.obj_queries_get_by_id(ModelRef, req.query, {
+                            success: function (response) {
+                                setHeader(res, start);
+                                if (id) {
+                                    res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
+                                } else {
+                                    res.send(response['statusCode'], response['content']);
+                                }
+                            },
+                            error: function (response) {
+                                setHeader(res, start);
+                                res.send(response['data']['statusCode'], response);
                             }
-                        },
-                        error: function (response) {
-                            setHeader(res, start);
-                            res.send(response['statusCode'], response['content']);
-                        }
-                    });
+                        });
+                    } else {
+                        apis.obj_queries_get(ModelRef, req.query, {
+                            success: function (response) {
+                                setHeader(res, start);
+                                if (id) {
+                                    res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
+                                } else {
+                                    res.send(response['statusCode'], response['content']);
+                                }
+                            },
+                            error: function (response) {
+                                setHeader(res, start);
+                                res.send(response['data']['statusCode'], response);
+                            }
+                        });
+                    }
                 } catch (error) {
                     handleError(res, error);
                 }
@@ -97,7 +115,7 @@ var restApis = (function() {
             } else {
                 var id = req.params.id;
                 if (id) {
-                    req.query['_id__e'] = id;
+                    req.query['_id__e'] = constants.schemaType.ObjectId(id);
                 } else {
                     req.query['multi'] = "true";
                 }
@@ -109,7 +127,7 @@ var restApis = (function() {
                         },
                         error: function (response) {
                             setHeader(res, start);
-                            res.send(response['statusCode'], response['content']);
+                            res.send(response['data']['statusCode'], response);
                         }
                     });
                 } catch (error) {
@@ -133,7 +151,7 @@ var restApis = (function() {
                         },
                         error: function (response) {
                             setHeader(res, start);
-                            res.send(response['statusCode'], response['content']);
+                            res.send(response['data']['statusCode'], response);
                         }
                     });
                 } catch (error) {

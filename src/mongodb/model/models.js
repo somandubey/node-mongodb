@@ -16,14 +16,18 @@ var models = (function () {
         defaults: defaultsModel
     };
 
+    var endsWith = function (str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
     return {
         getModel: function (collectionName) {
             return models[collectionName] || null;
         },
 
         setModel: function (collectionName, schema) {
-            models[collectionName] = mongoose.model(collectionName.toString(), schema);
-            if ( !collectionName.endsWith("s") ) {
+            models[collectionName.toLowerCase()] = mongoose.model(collectionName.toString(), schema);
+            if ( !endsWith(collectionName, "s") ) {
                 console.log('model created but its a good practise to pluralize your model name as mongodb collection name will always be plural.');
             }
             return true;
