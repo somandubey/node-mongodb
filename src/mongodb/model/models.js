@@ -3,9 +3,12 @@
  */
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema
+var validator = require('./validator');
 var ObjectId = Schema.ObjectId;
 
 var models = (function () {
+
+
     var defaultSchema = new Schema({
         //_id: ObjectId,
         "name": String
@@ -25,12 +28,17 @@ var models = (function () {
             return models[collectionName] || null;
         },
 
-        setModel: function (collectionName, schema) {
-            models[collectionName.toLowerCase()] = mongoose.model(collectionName.toString(), schema);
-            if ( !endsWith(collectionName, "s") ) {
-                console.log('model created but its a good practise to pluralize your model name as mongodb collection name will always be plural.');
-            }
+        setModel: function (modelName, schema) {
+            var model = mongoose.model(modelName, schema);
+            models[modelName.toLowerCase()] = mongoose.model(modelName.toString(), model);
+//            if ( !endsWith(modelName, "s") ) {
+//                console.log('model created but its a good practise to pluralize your model name as mongodb collection name will always be plural.');
+//            }
             return true;
+        },
+
+        validator: function (schema) {
+            return validator(schema);
         }
     };
 }());

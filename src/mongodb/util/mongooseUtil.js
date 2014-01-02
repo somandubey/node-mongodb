@@ -4,12 +4,17 @@
 var mongoose = require('mongoose');
 
 var mongodbUtil = (function () {
+    var db;
     return {
         init: function (mongodbHost, mongodbDb) {
             var _mongodbUrl = (mongodbHost && mongodbDb) ? "mongodb://" + mongodbHost + "/" + mongodbDb : "mongodb://localhost/test";
+            this.initUrl(_mongodbUrl);
+        },
+
+        initUrl: function (_mongodbUrl) {
             console.log('mongodb connection url: %s', _mongodbUrl);
             // connect to Mongo when the app initializes
-            mongoose.connect(_mongodbUrl, { server: { poolSize: 5 }});
+            this.db = mongoose.connect(_mongodbUrl, { server: { poolSize: 5 }});
             this._start();
         },
 
@@ -29,8 +34,12 @@ var mongodbUtil = (function () {
             mongoose.connection.on('close', function() {
                 console.log('Connection to MongoDB closed');
             });
+        },
+
+        getDB: function() {
+            return this.db;
         }
     };
-}());
+});
 
 module.exports = mongodbUtil;

@@ -41,10 +41,11 @@ var apis = (function () {
         console.log(response);
     };
 
-    var handleError = function (callback, error, statusCode, content, meta) {
+    var handleError = function (callback, error, statusCode, content, meta, modelRef) {
         var responseObj = _responseObj;
         responseObj['statusCode'] = statusCode || 500;
         responseObj['content'] = content || "not done.";
+
         responseObj['err'] = error;
         responseObj['stack'] = error || error.stack;
         responseObj = { 'data' : responseObj}
@@ -53,23 +54,23 @@ var apis = (function () {
         console.error(error);
 
         if(callback && callback.error) {
-            callback.error(responseObj);
+            callback.error(responseObj, modelRef);
         } else {
-            defaultHandleError(responseObj);
+            defaultHandleError(responseObj, modelRef);
         }
         // return res.send(responseObj['statusCode'], responseObj);
     };
 
-    var handleSuccess = function (callback, statusCode, content, meta) {
+    var handleSuccess = function (callback, statusCode, content, meta, modelRef) {
         var responseObj = _responseObj;
         responseObj['statusCode'] = statusCode || 200;
         responseObj['content'] = { 'data' : content};
         responseObj['content']['meta'] = meta;
 
         if(callback && callback.success) {
-            callback.success(responseObj);
+            callback.success(responseObj, modelRef);
         } else {
-            defaultHandleSuccess(responseObj);
+            defaultHandleSuccess(responseObj, modelRef);
         }
         // return res.send(responseObj['statusCode'], responseObj);
     }
@@ -330,10 +331,29 @@ var apis = (function () {
             var modelRef = new ModelRef(objToCreate)
             // ModelRef.create(objToCreate, function (error, results, num) {
             modelRef.save(function (error, results, num) {
+                var message;
                 if (error) {
-                    handleError(callback, error, null, "not created.", meta());
+                    switch (err.code) {
+                        case 11000:
+                        case 11001:
+                            message = 'already exists';
+                            break;
+                        default:
+                            message = "not created, please fill all the required fields";
+                    }
+                    handleError(callback, error, null, message, meta(), modelRef);
                 } else {
-                    handleSuccess (callback, 201, {"_id": modelRef._id}, meta());
+                    handleSuccess (callback, 201, {"_id": modelRef._id}, meta(), modelRef);
+                }
+            });
+        },
+
+        obj_get_by_id: function (ModelRef, filters, select, options, populate, callback) {
+            ModelRef.findOne(filters, select, options).exec(function (error, results) {
+                if (error) {
+                    handleError(callback, error, null, "not found.", meta(select, filters, options));
+                } else {
+                    handleSuccess (callback, 200, results, meta(select, filters, options));
                 }
             });
         },

@@ -2,13 +2,16 @@
  * Created by Soman Dubey on 12/27/13.
  */
 var routes = (function() {
-    var app;
     var restApis = require('../api/restApis');
     var models = require('../model/models');
     var constants = require('../util/constants');
     var customSchemaTypes = require('../util/customSchemaTypes');
     var schemaEnums = require('../util/schemaEnums');
     var mongoose = require('mongoose');
+    var apis = require('../api/apis');
+    var mongooseUtil = require('../util/mongooseUtil');
+
+    var mu;
 
     function performanceMiddleware(req, res, next) {
         next();
@@ -41,17 +44,25 @@ var routes = (function() {
          *
          * @param expressApp - express object
          */
-        init: function (expressApp) {
-            app = expressApp;
+        init: function () {
+            this.mu = mongooseUtil()
             return this;
         },
 
         connect: function (host, port) {
-            require('../util/mongooseUtil').init(host, port);
+            switch(arguments.length) {
+                case 1:
+                    console.log('mongodb url called:'+host);
+                    this.mu.initUrl(host);
+                    break;
+                default:
+                    console.log('mongodb params called:'+host+":"+port);
+                    this.mu.init(host, port);
+            }
             return this;
         },
 
-        initRoutes: function () {
+        initRoutes: function (app) {
             app.post('/api/v1/:collection', performanceMiddleware, ensureAuthenticationForApi, ensureAuthorizationForApi, restApis.create);        // Creates Object
             app.get('/api/v1/:collection', performanceMiddleware, ensureAuthenticationForApi, ensureAuthorizationForApi, restApis.find);           // Gets All objects
             app.get('/api/v1/:collection/:id', performanceMiddleware, ensureAuthenticationForApi, ensureAuthorizationForApi, restApis.find);       // Get One Specific Object
@@ -66,7 +77,11 @@ var routes = (function() {
         customSchemaTypes: customSchemaTypes,
         schemaEnums: schemaEnums,
         models: models,
-        mongoose: mongoose
+        mongoose: mongoose,
+        apis: apis,
+        getMU: function () {
+            return this.mu;
+        }
     }
 }());
 
