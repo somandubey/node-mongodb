@@ -65,9 +65,9 @@ var restApis = (function() {
                 handleError(res, {message: 'node-mongodb error: Model structure needs to be defined. Refer documentation at https://github.com/somandubey/node-mongodb'});
             } else {
                 var id = req.params.id;
-//                if (id) {
-//                    req.query['_id__e'] = constants.schemaType.ObjectId(id);
-//                }
+                if (id) {
+                    req.query['_id__e'] = id;
+                }
                 try {
                     if (id) {
                         apis.obj_queries_get_by_id(ModelRef, req.query, {

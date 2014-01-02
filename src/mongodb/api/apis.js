@@ -305,6 +305,19 @@ var apis = (function () {
             return responseObj;
         },
 
+        obj_queries_get_by_id: function (ModelRef, queries, callback) {
+            var queryParams = resolveQueries(queries);
+            console.log(queryParams);
+            var options = {
+                skip: queryParams.offset,
+                limit: queryParams.limit,
+                sort: queryParams.sort
+            };
+            var populate = queryParams.populate;
+
+            this.obj_get_by_id(ModelRef, queryParams.filters, queryParams.select, options, populate, callback);
+        },
+
         obj_queries_get: function (ModelRef, queries, callback) {
             var queryParams = resolveQueries(queries);
             var options = {
@@ -314,7 +327,7 @@ var apis = (function () {
             };
             var populate = queryParams.populate;
 
-            this.obj_get(ModelRef, queryParams.filters, queryParams.select, options, populate, callback)
+            this.obj_get(ModelRef, queryParams.filters, queryParams.select, options, populate, callback);
         },
 
         obj_queries_update: function (ModelRef, queries, update, callback) {
