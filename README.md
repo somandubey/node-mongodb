@@ -5,7 +5,19 @@ node-mongodb
 
 # How to setup
 
+At present below is not working
 	npm install node-mongodb
+
+you will have to clone this repository (from github) in your local and then goto root directory of this node-mongodb and type
+	npm link
+
+Above will create a global soft link for node-mongodb. You can check that by typing
+	npm ls -g
+
+ Then goto your project root directory where you want use node-mongodb and type
+	npm link node-mongodb
+
+That's it you are good to use it.
 
 # How to use
 
