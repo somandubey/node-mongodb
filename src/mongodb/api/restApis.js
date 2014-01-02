@@ -73,11 +73,12 @@ var restApis = (function() {
                         apis.obj_queries_get_by_id(ModelRef, req.query, {
                             success: function (response) {
                                 setHeader(res, start);
-                                if (id) {
-                                    res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
-                                } else {
-                                    res.send(response['statusCode'], response['content']);
-                                }
+                                res.send(response['statusCode'], response['content']);
+//                                if (id) {
+//                                    res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
+//                                } else {
+//                                    res.send(response['statusCode'], response['content']);
+//                                }
                             },
                             error: function (response) {
                                 setHeader(res, start);
@@ -88,11 +89,7 @@ var restApis = (function() {
                         apis.obj_queries_get(ModelRef, req.query, {
                             success: function (response) {
                                 setHeader(res, start);
-                                if (id) {
-                                    res.send(response['statusCode'], response['content'].length ? response['content'][0] : {});
-                                } else {
-                                    res.send(response['statusCode'], response['content']);
-                                }
+                                res.send(response['statusCode'], response['content']);
                             },
                             error: function (response) {
                                 setHeader(res, start);

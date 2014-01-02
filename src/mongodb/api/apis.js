@@ -305,7 +305,7 @@ var apis = (function () {
             return responseObj;
         },
 
-        obj_queries_get: function (ModelRef, queries, populate, callback) {
+        obj_queries_get: function (ModelRef, queries, callback) {
             var queryParams = resolveQueries(queries);
             var options = {
                 skip: queryParams.offset,
@@ -366,15 +366,15 @@ var apis = (function () {
 //                    handleSuccess (callback, 200, results, meta(select, filters, options));
 //                }
 //            });
-            ModelRef.find(filters, select, options)
-                .populate(populate)
-                .exec(function (error, results) {
-                    if (error) {
-                        handleError(callback, error, null, "not found.", meta(select, filters, options));
-                    } else {
-                        handleSuccess (callback, 200, results, meta(select, filters, options));
-                    }
-                });
+            var q = ModelRef.find(filters, select, options);
+            q = (populate) ? q.populate(populate) : q;
+            q.exec(function (error, results) {
+                if (error) {
+                    handleError(callback, error, null, "not found.", meta(select, filters, options));
+                } else {
+                    handleSuccess (callback, 200, results, meta(select, filters, options));
+                }
+            });
         },
 
         obj_update:  function (ModelRef, filters, update, multi, callback) {

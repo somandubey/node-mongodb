@@ -30,10 +30,12 @@ var models = (function () {
 
         setModel: function (modelName, schema) {
             var model = mongoose.model(modelName, schema);
-            models[modelName.toLowerCase()] = mongoose.model(modelName.toString(), model);
-//            if ( !endsWith(modelName, "s") ) {
-//                console.log('model created but its a good practise to pluralize your model name as mongodb collection name will always be plural.');
-//            }
+            if ( !endsWith(modelName, "s") ) {
+                models[modelName.toLowerCase()+"s"] = mongoose.model(modelName.toString(), model);
+                console.log('model created with pluralized syntax ('+modelName.toLowerCase()+'s) as its a good practise to pluralize your model name as mongodb collection name follows plural.');
+            } else {
+                models[modelName.toLowerCase()] = mongoose.model(modelName.toString(), model);
+            }
             return true;
         },
 
