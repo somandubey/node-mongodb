@@ -25,7 +25,12 @@ var models = (function () {
 
     return {
         getModel: function (collectionName) {
-            return models[collectionName] || null;
+            if ( !endsWith(collectionName, "s") ) {
+                return models[collectionName + "s"] || null;
+            } else {
+                return models[collectionName] || null;
+            }
+
         },
 
         setModel: function (modelName, schema) {

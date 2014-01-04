@@ -59,6 +59,8 @@ var routes = (function() {
                     console.log('mongodb params called:'+host+":"+port);
                     this.mu.init(host, port);
             }
+            mongoose.set('debug', true);
+            mongoose.set('verbose', true);
             return this;
         },
 
