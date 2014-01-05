@@ -1,6 +1,6 @@
 {
   "name": "node-mongodb",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "This repoistory builds rest framework around mongodb which is as easy as tastypie. It also builds node.js library for calling mongodb API methods directly.",
   "keywords": ["node.js", "mongodb", "rest", "tastypie", "mongodb rest filters", "mongodb rest orderby", "mongodb rest groupby"],
   "homepage": "https://github.com/somandubey/node-mongodb",

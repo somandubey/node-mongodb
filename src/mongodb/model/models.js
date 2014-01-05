@@ -25,22 +25,18 @@ var models = (function () {
 
     return {
         getModel: function (collectionName) {
-            if ( !endsWith(collectionName, "s") ) {
-                return models[collectionName + "s"] || null;
-            } else {
-                return models[collectionName] || null;
-            }
-
+            return models[collectionName] || null;
         },
 
         setModel: function (modelName, schema) {
             var model = mongoose.model(modelName, schema);
-            if ( !endsWith(modelName, "s") ) {
-                models[modelName.toLowerCase()+"s"] = mongoose.model(modelName.toString(), model);
-                console.log('model created with pluralized syntax ('+modelName.toLowerCase()+'s) as its a good practise to pluralize your model name as mongodb collection name follows plural.');
-            } else {
-                models[modelName.toLowerCase()] = mongoose.model(modelName.toString(), model);
-            }
+            models[modelName] = mongoose.model(modelName.toString(), model);
+//            if ( !endsWith(modelName, "s") ) {
+//                models[modelName] = mongoose.model(modelName.toString(), model);
+//                console.log('model created with pluralized syntax ('+modelName.toLowerCase()+'s) as its a good practise to pluralize your model name as mongodb collection name follows plural.');
+//            } else {
+//                models[modelName] = mongoose.model(modelName.toString(), model);
+//            }
             return true;
         },
 
