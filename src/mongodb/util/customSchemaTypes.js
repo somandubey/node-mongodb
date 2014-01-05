@@ -65,6 +65,12 @@ var customSchemaTypes = (function () {
         name: nameSchemaType
     };
 
+    var userAnswerSchema = {
+        questionId:String, 
+        userAnswer:[String], 
+        answeredAt: Date        
+    };
+
     return {
         nameSchemaTypeWithIndex: nameSchemaTypeWithIndex,
         nameSchemaType: nameSchemaType,
@@ -73,7 +79,8 @@ var customSchemaTypes = (function () {
         phoneSchemaType: phoneSchemaType,
         contactSchemaType: contactSchemaType,
         userSchemaType: userSchemaType,
-        userRefSchemaType: userRefSchemaType
+        userRefSchemaType: userRefSchemaType,
+        userAnswerSchema: userAnswerSchema
     };
 }());
 
