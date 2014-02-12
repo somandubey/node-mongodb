@@ -5,11 +5,11 @@ node-mongodb
 
 # How to setup
 
-At present below is not working
+This should work
 
 	npm install node-mongodb
 
-you will have to clone this repository (from github) in your local and then goto root directory of this node-mongodb and type
+Or you will have to clone this repository (from github) in your local and then goto root directory of this node-mongodb and type
 
 	npm link
 
