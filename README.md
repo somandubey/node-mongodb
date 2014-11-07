@@ -160,3 +160,7 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 Refer [MIT License](https://github.com/somandubey/node-mongodb/blob/master/LICENSE) for details.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/somandubey/node-mongodb/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
